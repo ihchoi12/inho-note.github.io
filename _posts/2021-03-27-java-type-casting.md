@@ -8,26 +8,41 @@ tags:
   - casting
 ---
 
+## Two (different) kinds of type in JAVA: Primitive & Reference
+##### Primitive variable
+- Contains value
+- **Primitive Conversion** menas irreversible changes of its value
+```
+double myDouble = 1.1;
+int myInt = (int) myDouble;
+        
+assertNotEquals(myDouble, myInt);
+```
+##### Reference variable
+- Only refers to an object (NOT contain the object itself)
+- **reference variable casting** does NOT touch the object it refers to, but only labels this object in another way
+- It may expands (downcasting) or narrows (upcasting) opportunities to work with it
+> A reference is like a remote control to an object. The remote control has more or fewer buttons depending on its type, and the object itself is stored in a heap. When we do casting, we change the type of the remote control but don’t change the object itself.
 
-## Common:
-- Form a contract that any subclasses which inherits from them **have to implement their abstract methods** (i.e., methods w/o body). 
-- Cannot be instantiated as itself
+## Reference Variable Casting
+##### Upcasting
+- implicitly performed by the compiler 
+```
+Cat cat = new Cat();
+// Supppose Cat extends Animal, following two lines are same
+Animal animal = cat;
+animal = (Animal) cat;
+// The cat instance itself does NOT change
+// But, we cannot invoke methods in Cat class only from the animal variable
+```
+- Then, why do upcasting? Advantage: **Polymorphism** //HERE
 
-## Difference:
-##### Abstract Class: \
-- *extends*
-- (usually) Contains at least one abstract method
-- Possible to have no methods (reason: to prevent it from being instantiated on its own)
-- When to use? To define superclass with some common methods (general methods) for all subclasses 
-while giving some flexibilities of some methods' (abstrace methods) body to subclasses  
 
-##### Interface: \
-- *implements*
-- Contains only abstract methods
-- When to use? When we have multiple subclasses having methods with common interface (name, parameter) yet unique body only.
+
+##### Downcasting
 
 ##### References
-https://www.youtube.com/watch?v=2aQ9Y7bumts
+https://www.baeldung.com/java-type-casting
 
 Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
 
