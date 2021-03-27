@@ -11,7 +11,7 @@ tags:
 Goal: to group a set of operations into an **atomic** unit \
 4 guarantees: ACID \
 What is **Distributed** TX? TX on a **partitioned** (into multiple shards) DB (while preserving ACID) \
-Why partition? 1) storage capacity; 2) scalability (by distributing client requests); \
+Why partition? 1) storage capacity; 2) scalability (by distributing client requests); 
 
 ###### Atomicity
 - Executed (committed) by all participating shards or none (aborted) 
