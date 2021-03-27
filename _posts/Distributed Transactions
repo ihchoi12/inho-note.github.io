@@ -30,6 +30,8 @@ d) Otherwise, C sends ABORT to those voted YES
 [Isolation of TXs in DB]
 - Serializability:  
 - Strict-Serializability:
+(17:26)
+
 
 
 
