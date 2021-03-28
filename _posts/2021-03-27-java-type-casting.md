@@ -35,11 +35,41 @@ animal = (Animal) cat;
 // The cat instance itself does NOT change
 // But, we cannot invoke methods in Cat class only from the animal variable
 ```
-- Then, why do upcasting? Advantage: **Polymorphism** //HERE
+- Then, why do upcasting? Advantage: **Polymorphism** 
 
+
+##### Polymorphism
+- Use of a single symbol (e.g., Class, Object, interface, etc.) to represent multiple different types
+- Advantage: can handle multiple different types by a single type 
+```
+List<Animal> animals = new ArrayList<>();
+animals.add(new Cat());
+animals.add(new Dog());
+new AnimalFeeder().feed(animals);
+```
 
 
 ##### Downcasting
+- Casting from a superclass to a subclass
+- (unlike upcasting) Done using cast operator
+- When to use? to gain access to members **specific to subclass**
+```
+((Cat) animal).meow();
+```
+
+##### Overriding
+- Providing a specific implementation of a method in a subclass provided by its superclass
+- Although a subclass var is assigned to its superclass var, calling methods **invokes on the real object** (i.e., subclass) 
+
+
+## Related Operators
+- *instanceof*: check the specific type of an object
+```
+if (animal instanceof Cat) {
+    ((Cat) animal).meow();
+}
+```
+- *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class<T>)
 
 ##### References
 https://www.baeldung.com/java-type-casting
