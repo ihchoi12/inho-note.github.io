@@ -35,6 +35,7 @@ while giving some flexibilities of some methods' (abstrace methods) implementati
 
 ##### References
 https://www.youtube.com/watch?v=2aQ9Y7bumts
+https://www.youtube.com/watch?v=mf0jQijo9C4
 
 Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
 
