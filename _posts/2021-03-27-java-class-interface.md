@@ -8,8 +8,10 @@ tags:
   - abstract class
 ---
 
-## Common:
-- Form a contract that any subclasses which inherits from them **have to implement their abstract methods** (i.e., methods w/o body). 
+What is abstraction? Showing the interface (or functionality) while hiding the implementation details. 
+
+## Commonality:
+- Form a contract that any subclasses which inherits from them **have to implement their abstract methods** (i.e., methods w/o implementation). 
 - Cannot be instantiated as itself
 - Can be instantiated using its subclass (e.g., InterfaceA varA = new SubClassA() or AbstractClassA varA = new SubClassA())
 
@@ -18,13 +20,18 @@ tags:
 - *extends*
 - (usually) Contains at least one abstract method
 - Possible to have no methods (reason: to prevent it from being instantiated on its own)
-- When to use? To define superclass with some common methods (general methods) for all subclasses 
-while giving some flexibilities of some methods' (abstrace methods) body to subclasses  
+- NOT allow multiple inheritance
+- Can define member variables
+- When to use? To define superclass with some common methods (concrete methods) for all subclasses
+(taking advantage of code reusability and reduced implementation cost here) 
+while giving some flexibilities of some methods' (abstrace methods) implementation to subclasses  
 
 ##### Interface: 
 - *implements*
 - Contains only abstract methods
-- When to use? When we have multiple subclasses having methods with common interface (name, parameter) yet unique body only.
+- Allow multiple inheritance
+- ALL member variables are (implicitly) public, static and final
+- When to use? When we have multiple subclasses having methods with common interface (name, parameter) yet unique implementation only.
 
 ##### References
 https://www.youtube.com/watch?v=2aQ9Y7bumts
