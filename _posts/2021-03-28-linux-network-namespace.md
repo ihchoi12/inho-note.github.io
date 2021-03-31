@@ -41,6 +41,14 @@ $ netstat
 Ex. to check Tcp connections (i.e., sockets) that the device is Listening in Numbers
 $ netstat -tln
 ```
+- Check routing table
+```
+$ ip route
+```
+
+## Namespace Handling
+##### Add namespace
+$ ip netns add red
 ##### Root Namespace
 
 
