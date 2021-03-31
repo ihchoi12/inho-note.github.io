@@ -10,11 +10,11 @@ tags:
 
 ## Idempotent
 - Internal state only changes as a result of the first message (even if duplicates exist)
-- f(x) = f(f(x))
+- f(x) = f(f(x)) (where f is the application of the algorithm for a given input and x is the initial state)
 
 ## Deterministic
 - Internal state changes is only a function of the sequence of inputs
-- Algorithm == f(x)
+- Algorithm == f(x) (where x is the initial state)
 
 
 
