@@ -18,32 +18,25 @@ if (words.contains("C")) {
 - Some data structure (e.g., Map) handles these issues using **hash tables**
 - **hashcode()** calculate the hash value for a given **key** in hash tables (values can be accessed efficiently!)
 
+## How hashCode() works?
+- returns an integer value
+- Equal Objects (by *equals()*) must return the same hash code
+- Collisions can happen, but ensuring distinct results for unequal objects improves the performance of hash tables
+- hashCode() defined by **class** Object returns distinct integers for distinct objects
+- During a single execution of Java app, hashCode() invoked on the same object returns the same value (but the value can be inconsistent across executions)
 
+## How to implement efficient hashCode()?
+- Several standard options: IntelliJ, Eclipse, Lombok, etc.
+- Those utilize number 31: prime and bitwise multication friendly
+```
+31 * i == (i << 5) - i
+```
 
+## How to handle collisions?
+- Various methodologies with their own pros and cons
+- ex. *HashMap* uses the *separate chaining method*: each bucket is maintained as a linked-list
+- Java 8 improve it: if a bucket size over the certain threshold, replace it with tree map, i.e., O(n) to O(log n)
 
-
-## Commonality:
-- Form a contract that any subclasses which inherits from them **have to implement their abstract methods** (i.e., methods w/o implementation). 
-- Cannot be instantiated as itself
-- Can be instantiated using its subclass (e.g., InterfaceA varA = new SubClassA() or AbstractClassA varA = new SubClassA())
-
-## Difference:
-##### Abstract Class: 
-- *extends*
-- (usually) Contains at least one abstract method
-- Possible to have no methods (reason: to prevent it from being instantiated on its own)
-- NOT allow multiple inheritance
-- Can define member variables
-- When to use? To define superclass with some common methods (concrete methods) for all subclasses
-(taking advantage of code reusability and reduced implementation cost here) 
-while giving some flexibilities of some methods' (abstrace methods) implementation to subclasses  
-
-##### Interface: 
-- *implements*
-- Contains only abstract methods
-- Allow multiple inheritance
-- ALL member variables are (implicitly) public, static and final
-- When to use? When we have multiple subclasses having methods with common interface (name, parameter) yet unique implementation only.
 
 ##### References
 https://www.baeldung.com/java-hashcode
