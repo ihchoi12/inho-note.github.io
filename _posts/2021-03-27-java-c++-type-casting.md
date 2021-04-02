@@ -16,12 +16,13 @@ tags:
 ##### Primitive variable (C++, JAVA)
 - Contains value
 - **Primitive Conversion** menas irreversible changes of its value
-```
+```java
 double myDouble = 1.1;
 int myInt = (int) myDouble;
         
 assertNotEquals(myDouble, myInt);
 ```
+
 ##### Reference variable (only JAVA)
 - ALL object variables in JAVA are references (the value is the address, it may not be the actual memory address though [3, 4]) 
 - Only refers to an object (NOT contain the object itself)
@@ -116,6 +117,7 @@ if (animal instanceof Cat) {
     ((Cat) animal).meow();
 }
 ```
+
 - *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class<T>)
 
 ##### References
