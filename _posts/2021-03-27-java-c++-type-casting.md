@@ -16,6 +16,7 @@ tags:
 ##### Primitive variable (C++, JAVA)
 - Contains value
 - **Primitive Conversion** menas irreversible changes of its value
+
 ```java
 double myDouble = 1.1;
 int myInt = (int) myDouble;
