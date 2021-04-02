@@ -1,15 +1,15 @@
 ---
-title: "JAVA - type casting"
+title: "C++ & JAVA - type casting"
 date: 2021-03-26
 categories:
+  - C++
   - JAVA
 tags:
-  - type
-  - casting
+  - type casting
 ---
 
-## Two (different) kinds of type in JAVA: Primitive & Reference
-##### Primitive variable
+## Two (different) kinds of type : Primitive, Reference, Pointer
+##### Primitive variable (C++, JAVA)
 - Contains value
 - **Primitive Conversion** menas irreversible changes of its value
 ```
@@ -18,11 +18,29 @@ int myInt = (int) myDouble;
         
 assertNotEquals(myDouble, myInt);
 ```
-##### Reference variable
+##### Reference variable (only JAVA)
+- ALL objects in JAVA are references 
 - Only refers to an object (NOT contain the object itself)
 - **reference variable casting** does NOT touch the object it refers to, but only labels this object in another way
 - It may expands (downcasting) or narrows (upcasting) opportunities to work with it
 > A reference is like a remote control to an object. The remote control has more or fewer buttons depending on its type, and the object itself is stored in a heap. When we do casting, we change the type of the remote control but don’t change the object itself.
+
+##### Reference variable (only C++)
+- Another name to an existing variable (cannot reference to null)
+- Must be initialized once declared (cannot change the referencing target after then)
+- Reference target can be a function
+```
+int foo(double i) {
+  return 2;
+}
+
+// syntax: RETURN_TYPE (&REFERENCE_VAR_NAME) (PARAMETER_LIST) = REFERENCED_FUNCTION;
+int(&ref)(double) = foo;
+ref(2.0);
+```
+
+##### Pointer variable (only C++)
+
 
 ## Reference Variable Casting
 ##### Upcasting
@@ -72,6 +90,7 @@ if (animal instanceof Cat) {
 - *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class<T>)
 
 ##### References
+References in C++: https://www.tutorialcup.com/cplusplus/references.htm
 https://www.baeldung.com/java-type-casting
 
 Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
