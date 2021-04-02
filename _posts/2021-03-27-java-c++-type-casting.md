@@ -8,7 +8,11 @@ tags:
   - type casting
 ---
 
-## Two (different) kinds of type : Primitive, Reference, Pointer
+## Basic: variable
+- Definition: a location of computer's memory (size depends on the variable type) 
+- Two components: 1) (starting) address; 2) value;
+
+## Three (different) kinds of type : Primitive, Reference, Pointer
 ##### Primitive variable (C++, JAVA)
 - Contains value
 - **Primitive Conversion** menas irreversible changes of its value
@@ -19,7 +23,7 @@ int myInt = (int) myDouble;
 assertNotEquals(myDouble, myInt);
 ```
 ##### Reference variable (only JAVA)
-- ALL objects in JAVA are references 
+- ALL object variables in JAVA are references (the value is the address, it may not be the actual memory address though [3, 4]) 
 - Only refers to an object (NOT contain the object itself)
 - **reference variable casting** does NOT touch the object it refers to, but only labels this object in another way
 - It may expands (downcasting) or narrows (upcasting) opportunities to work with it
@@ -27,6 +31,7 @@ assertNotEquals(myDouble, myInt);
 
 ##### Reference variable (only C++)
 - Another name to an existing variable (cannot reference to null)
+- Implicit referencing and dereferencing (unlike pointers)
 - Must be initialized once declared (cannot change the referencing target after then)
 - Reference target can be a function
 ```
@@ -40,32 +45,56 @@ ref(2.0);
 ```
 
 ##### Pointer variable (only C++)
-
-
-## Reference Variable Casting
-##### Upcasting
-- implicitly performed by the compiler 
+- Take the address of the other variable as its value
+- * is used to access the value of the variable that the pointer is pointing
+- We can use *pointer arithmetic*: moving the pointer location (i.e., its value, that is, address of the target variable)
+- Target can be a function
 ```
+int foo(double i) {
+  return 2;
+}
+
+// syntax: RETURN_TYPE (*POINTER_NAME) (PARAMETER_LIST) = REFERENCED_FUNCTION;
+int(*func_foo)(double) = foo;
+func_foo(2.0);
+```
+
+
+## Reference or Pointer Variable Casting
+##### Upcasting
+- Implicitly performed by the compiler 
+```
+/* Supppose Cat extends Animal */
+
+// [JAVA]
 Cat cat = new Cat();
-// Supppose Cat extends Animal, following two lines are same
+// following two lines are same
 Animal animal = cat;
 animal = (Animal) cat;
-// The cat instance itself does NOT change
-// But, we cannot invoke methods in Cat class only from the animal variable
-```
-- Then, why do upcasting? Advantage: **Polymorphism** 
 
+// [C++]
+Animal* animal;
+Cat cat();
+animal = &cat;
+
+/* The cat instance itself does NOT change */
+/* But, we cannot invoke methods in Cat class only from the animal variable */
+```
+- Narrow down opportunities to work with it. 
+- Then, why do upcasting? Advantage: **Polymorphism** 
 
 ##### Polymorphism
 - Use of a single symbol (e.g., Class, Object, interface, etc.) to represent multiple different types
-- Advantage: can handle multiple different types by a single type 
+- Advantage1: can handle multiple different types by a single type (i.e., can use generic functions for multiple derived classes)
 ```
 List<Animal> animals = new ArrayList<>();
 animals.add(new Cat());
 animals.add(new Dog());
 new AnimalFeeder().feed(animals);
 ```
+- C++: since the memory size of a pointer is decided by the type, base class pointer cannot access the memory of derived class (i.e., members of the derived class)
 
+![image](https://user-images.githubusercontent.com/37887404/113405871-1b4cb700-93dd-11eb-9aef-8ca0332e21e4.png)
 
 ##### Downcasting
 - Casting from a superclass to a subclass
@@ -90,8 +119,10 @@ if (animal instanceof Cat) {
 - *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class<T>)
 
 ##### References
-References in C++: https://www.tutorialcup.com/cplusplus/references.htm
-https://www.baeldung.com/java-type-casting
+[1] References in C++: https://www.tutorialcup.com/cplusplus/references.htm
+[2] https://www.baeldung.com/java-type-casting
+[3] Memory Address of Objects in Java: https://www.baeldung.com/java-object-memory-address
+[4] https://stackoverflow.com/questions/18396927/how-to-print-the-address-of-an-object-if-you-have-redefined-tostring-method
 
 Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
 
