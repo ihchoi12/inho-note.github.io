@@ -36,6 +36,7 @@ assertNotEquals(myDouble, myInt);
 - Implicit referencing and dereferencing (unlike pointers)
 - Must be initialized once declared (cannot change the referencing target after then)
 - Reference target can be a function
+
 ```
 int foo(double i) {
   return 2;
@@ -51,6 +52,7 @@ ref(2.0);
 - * is used to access the value of the variable that the pointer is pointing
 - We can use *pointer arithmetic*: moving the pointer location (i.e., its value, that is, address of the target variable)
 - Target can be a function
+
 ```
 int foo(double i) {
   return 2;
@@ -65,6 +67,7 @@ func_foo(2.0);
 ## Reference or Pointer Variable Casting
 ##### Upcasting
 - Implicitly performed by the compiler 
+
 ```
 /* Supppose Cat extends Animal */
 
@@ -82,28 +85,60 @@ animal = &cat;
 /* The cat instance itself does NOT change */
 /* But, we cannot invoke methods in Cat class only from the animal variable */
 ```
+
 - Narrow down opportunities to work with it. 
 - Then, why do upcasting? Advantage: **Polymorphism** 
 
 ##### Polymorphism
 - Use of a single symbol (e.g., Class, Object, interface, etc.) to represent multiple different types
 - Advantage1: can handle multiple different types by a single type (i.e., can use generic functions for multiple derived classes)
+
 ```
 List<Animal> animals = new ArrayList<>();
 animals.add(new Cat());
 animals.add(new Dog());
 new AnimalFeeder().feed(animals);
 ```
+
 - C++: since the memory size of a pointer is decided by the type, base class pointer cannot access the memory of derived class (i.e., members of the derived class)
 
 ![image](https://user-images.githubusercontent.com/37887404/113405871-1b4cb700-93dd-11eb-9aef-8ca0332e21e4.png)
 
 ##### Downcasting
 - Casting from a superclass to a subclass
-- (unlike upcasting) Done using cast operator
+- (unlike upcasting) Done manually using cast operator
 - When to use? to gain access to members **specific to subclass**
+- Careful: subclass is (always) a baseclass, but NOT opposite (so we use *instanceof* in JAVA and *dynamic_cast* in C++, see ) 
+
 ```
+[JAVA]
 ((Cat) animal).meow();
+
+[C++]
+Cat* cat1();
+Animal* animal = &cat1;
+Cat* cat2 = (Cat*)(animal);
+```
+
+## Operators for Downcasting
+- [JAVA] *instanceof*: check the specific type of an object
+- [JAVA] *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class<T>)
+- [C++] *dynamic_cast*: if its safe and possible, return the address of converted object, otherise nullptr. (CAUTIOIN: to use *dynamic_cast*, the base class should be polymorphic – it must have at least one virtual function)
+
+```
+[JAVA]
+if (animal instanceof Cat) {
+    ((Cat) animal).meow();
+}
+
+[C++]
+Animal animal();
+Cat* cat = dynamic_cast<Cat*>(&animal);
+if (cat)
+  cout << DONE << endl;
+else
+  cout << NOPE << endl;
+// NOPE will be printed
 ```
 
 ##### Overriding
@@ -111,15 +146,8 @@ new AnimalFeeder().feed(animals);
 - Although a subclass var is assigned to its superclass var, calling methods **invokes on the real object** (i.e., subclass) 
 
 
-## Related Operators
-- *instanceof*: check the specific type of an object
-```
-if (animal instanceof Cat) {
-    ((Cat) animal).meow();
-}
-```
 
-- *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class<T>)
+
 
 ##### References
 [1] References in C++: https://www.tutorialcup.com/cplusplus/references.htm
