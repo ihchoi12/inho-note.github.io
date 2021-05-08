@@ -34,6 +34,13 @@ history of operations is equivalent to a sequencial order **respecing local orde
 (17:26)
 
 
+Useful Commands for Hydra
+
+$ lscpu | grep NUMA
+// to check NUMA node and CPU core mappings 
+
+
+
 
 
 You'll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
