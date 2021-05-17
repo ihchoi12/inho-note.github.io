@@ -54,6 +54,44 @@ to get the Bitcoin rewards from it
 What is network sybil attack and is bitcoin safe from it?
 What can be done to prevent network sybil attack?
 
+
+# Week-2: Segwit: Segregated Witness
+### How Bitcoin TX works?
+- You have one block (1MB) which contains multiple layers of data (two main layers: headers, TXs)
+- Header of every TX has the sender's script (code) and the recipient's information 
+- Script has the sender's signature and publicKey (necessary to verify TXs)
+- However, the script is heavy in data weight so that the 1MB block is getting full and clogging down the network
+
+### Segwit
+- Scrape the script from the TX, and put it into a different block (called an extended block)
+- Extended block reduces the size of a block, hence making it lighter, faster, and more scalable
+- Now, TX header has only recipient's information, and the extended block is transmitted together
+
+### Making changes on the rules of BTC network
+- Consensus and governance is important in BTC community
+- Sometimes, the *politics* cause major issues in applying certain BIPs
+- Scaling BTC is a main topic, and changing BTC's **consensus rule** has been discussed as an approach
+- Althought BTC's **decentralization** is a core value, the lack of a central decider has been an issue
+- Why? No one can force new rules on the network. We need a way for the network to adapt or adjust new rulse, and make sure everyone agrees on that.
+
+### Hard Forks and Soft Forks
+- These happen whenever the rules of network are updated
+- Soft: when the updates are backward compatible, and eventually only one blockchain remain valid
+- Hard: when the updates are backward incompatible, and eventually both blockchain (before and after the updates) remain valid in parallel
+
+### BIP9: Enabling easier upgrades to BTC
+- Allowing updates making Soft Forks to be deployed at the same time 
+- How? Change the way of nodes to interpret *version* field in blocks (using *version bits*)
+- Version bits: allow miners to signal when they are ready to adopt the new rules, and allow users to set up a parallel soft fork 
+- Now, several updates can be deployed in parallel without knowing which one is going to be activated first.
+- Controversial. Why? Due to the 95% threshold, miners can enforce some rules that users don't want
+
+### BIP148: 
+- Adopt Segwit without consensus of miners as in BIP9
+
+Additional Question: What should be the reasoning behind the 95% threshold of BIP 9? What would be implications of setting lower threshold?
+Answer: 95% to minimize danger of chain split, but it makes a side-effect of giving too much power to miners. Reducing the threshold would relieve this side-effect, but should be set carefully since it will increase the danger of chain split 
+
 ```
 List<String> words = Arrays.asList("A", "B", "C");
 if (words.contains("C")) {
@@ -84,9 +122,9 @@ if (words.contains("C")) {
 
 
 ##### References
-https://www.baeldung.com/java-hashcode
+[1] Segwit: https://www.youtube.com/watch?v=OFfBRzh9HmU
+[2] BIP9: https://bitcoinmagazine.com/technical/bip-enabling-easier-changes-and-upgrades-to-bitcoin-1453929816
 
-Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
 
 [jekyll-docs]: https://jekyllrb.com/docs/home
 [jekyll-gh]:   https://github.com/jekyll/jekyll
