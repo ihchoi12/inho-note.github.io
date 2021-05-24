@@ -92,33 +92,18 @@ What can be done to prevent network sybil attack?
 Additional Question: What should be the reasoning behind the 95% threshold of BIP 9? What would be implications of setting lower threshold?
 Answer: 95% to minimize danger of chain split, but it makes a side-effect of giving too much power to miners. Reducing the threshold would relieve this side-effect, but should be set carefully since it will increase the danger of chain split 
 
-```
-List<String> words = Arrays.asList("A", "B", "C");
-if (words.contains("C")) {
-    System.out.println("C is in the list");
-}
-```
-- Some data structure (e.g., Map) handles these issues using **hash tables**
-- **hashcode()** calculate the hash value for a given **key** in hash tables (values can be accessed efficiently!)
 
-## How hashCode() works?
-- returns an integer value
-- Equal Objects (by *equals()*) must return the same hash code
-- Collisions can happen, but ensuring distinct results for unequal objects improves the performance of hash tables
-- hashCode() defined by **class** Object returns distinct integers for distinct objects
-- During a single execution of Java app, hashCode() invoked on the same object returns the same value (but the value can be inconsistent across executions)
-
-## How to implement efficient hashCode()?
-- Several standard options: IntelliJ, Eclipse, Lombok, etc.
-- Those utilize number 31: prime and bitwise multication friendly
-```
-31 * i == (i << 5) - i
-```
-
-## How to handle collisions?
-- Various methodologies with their own pros and cons
-- ex. *HashMap* uses the *separate chaining method*: each bucket is maintained as a linked-list
-- Java 8 improve it: if a bucket size over the certain threshold, replace it with tree map, i.e., O(n) to O(log n)
+# Week-3: Mining & Network Block Propagation
+### How do pools give work assignments to client miners?
+- The pool gives a different template for a block to each miner
+- Then, each miner can generate lots of blocks from the template
+- That is, although the miners try the hashing with same nonce values, they end up trying different blocks due to the differences in other parts of block
+(as long as the pool never give out the same block template twice)
+### Do all miners search the same block candidates?
+- No, since the given block template is different across miners, they search different block even if they are trying the same nonce value
+### Additional Questions
+- When the pool gives out different block templates, which parts of the template are different across miners?
+- If the pool can assign a specific range of nonce across miners, can it be more efficient to have miners work on the same block candidate with different range of nonces?
 
 
 ##### References
