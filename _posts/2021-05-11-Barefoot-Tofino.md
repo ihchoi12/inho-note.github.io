@@ -31,7 +31,7 @@ Before start, TCP/IP model has mostly replaced the tradinal internet communicati
 - *bfrt_root* is the root object
 - From this, we can access ongoing P4 programm and its objects
 
-
+### bfrt_server vs bfrt_client
 
 
 ##### References
