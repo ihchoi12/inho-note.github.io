@@ -99,6 +99,7 @@ Answer: 95% to minimize danger of chain split, but it makes a side-effect of giv
 - Then, each miner can generate lots of blocks from the template
 - That is, although the miners try the hashing with same nonce values, they end up trying different blocks due to the differences in other parts of block
 (as long as the pool never give out the same block template twice)
+- https://blog.bitmex.com/an-overview-of-the-covert-asicboost-allegation-2/
 ### Do all miners search the same block candidates?
 - No, since the given block template is different across miners, they search different block even if they are trying the same nonce value
 ### Additional Questions
