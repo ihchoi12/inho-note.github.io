@@ -10,16 +10,7 @@ tags:
 Before start, TCP/IP model has mostly replaced the tradinal internet communication model (OSI 7-Layer), and these are mostly similar.
 
 
-# Layer-1: Physical Layer 
-
-### How two nodes (computers) communicate?
-- ALL programs and files are sequences of 0 or 1, so the only thing they need is a way to send and receive 0 or 1
-- Looks simple! Why don't we connect them via a electric cable, and assume 0V is 0 and 5V is 1 (i.e., digital signal) [1]?
-- It doesn't work.. why? such digital signal have 0 ~ infinite frequency, and no cables can transmit such signal 
-- Then, how can we send digital signal? Solution: encoding it into analogue signal\
-
-##### Physical Layer: modules (implemented in a hardware called PHY-chip) enabling two nodes' communication by 1) Encoding (digital => analouge); 2) Upon receiving analogue, decoding (analouge => digital);
-
+# Basic Components
 
 ### bf_switchd: user-space driver
 - To interface with the running P4 program 
@@ -36,8 +27,9 @@ Before start, TCP/IP model has mostly replaced the tradinal internet communicati
 
 
 ### bfrt_python
-- to control tables (and other P4 objects) in my program
-
+- A tool to control tables (and other P4 objects) in my program
+- *bfrt_root* is the root object
+- From this, we can access ongoing P4 programm and its objects
 
 
 
