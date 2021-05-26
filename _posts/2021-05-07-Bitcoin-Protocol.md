@@ -99,7 +99,7 @@ Answer: 95% to minimize danger of chain split, but it makes a side-effect of giv
 - Then, each miner can generate lots of blocks from the template
 - That is, although the miners try the hashing with same nonce values, they end up trying different blocks due to the differences in other parts of block
 (as long as the pool never give out the same block template twice)
-- https://blog.bitmex.com/an-overview-of-the-covert-asicboost-allegation-2/
+- Which header fileds are changed to differentiate block template? Extra nonce in the Merkle root [4]
 ### Do all miners search the same block candidates?
 - No, since the given block template is different across miners, they search different block even if they are trying the same nonce value
 ### Additional Questions
@@ -110,7 +110,8 @@ Answer: 95% to minimize danger of chain split, but it makes a side-effect of giv
 ##### References
 [1] Segwit: https://www.youtube.com/watch?v=OFfBRzh9HmU
 [2] BIP9: https://bitcoinmagazine.com/technical/bip-enabling-easier-changes-and-upgrades-to-bitcoin-1453929816
-
+[3] https://bitcoin.stackexchange.com/questions/66396/how-miners-on-the-same-pool-search-non-overlapping-sets-of-nonce-candidates-alre
+[4] https://blog.bitmex.com/an-overview-of-the-covert-asicboost-allegation-2/
 
 [jekyll-docs]: https://jekyllrb.com/docs/home
 [jekyll-gh]:   https://github.com/jekyll/jekyll
