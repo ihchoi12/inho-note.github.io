@@ -62,6 +62,7 @@ txn-id> to all replicas;
 
 
 
+
 ### Support General TXs
 - Use independent TXs as a building block
 - *preliminary TXs*: to gather read dependencies
