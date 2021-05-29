@@ -45,10 +45,21 @@ tags:
 
 ### 5 Protocols of Eris
 1) normal case: txn-index (i.e., opnum), cannot process TXs in *perm-drops* (to be NO-OP) or *temp-drops* (candidates to be NO-OP)
-2) handling pkt drops
+2) handling pkt drops: FC ensures atomicity 
 3) DL change (within a shard)
 4) Epoch change
 5) Synchronization
+
+### Handling Pkt Drops
+- A replica detect a pkt drop => send <FIND-TXN, txn-id>, txn-id: <shard-num, seq-num, epoch-num> to FC
+- FC broadcast <TXN-REQUEST, txn-id> to all shards all replicas
+- If a receiver has matching TX, replies <HAS-TXN, txn>. Else, add txn-id to *temp-drops* and replies <TEMP-DROPPED-TXN, view-num, txn-id>
+- FC receives 1) a single HAS-TXN => save it and sends <TXN-FOUND, txn> to all; 2) quorum TEMP-DROPPED-TXN from every shard => send <TXN-DROPPED,
+txn-id> to all replicas;
+- Replica receives 1) TXN-FOUND => add txn into *un-drops* and log, replies back to client; 2) TXN-DROPPED => add txn-id into *perm-drops*, add NO-OP to log
+- Replica proceeds to subsequent TXs
+* OPTIMIZATION: pkt drop detect => tries to recover from other replicas within its shard first (can handle this drop without FC)
+
 
 
 ### Support General TXs
