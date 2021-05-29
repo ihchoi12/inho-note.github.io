@@ -107,6 +107,17 @@ Answer: 95% to minimize danger of chain split, but it makes a side-effect of giv
 - If the pool can assign a specific range of nonce across miners, can it be more efficient to have miners work on the same block candidate with different range of nonces?
 
 
+# Week-4: P2P Network
+### Tried Table
+- Tried: store public IP addrs of peers that the node has successfully established an incoming or outgoing connection
+- The timestamp for the most recent successful connection to each peer is stored together.
+- The position in the table is decided by hash of the peer's 1) IP addr; 2) group (/16 IPv4 prefix containing it's IP addr; 3)
+- 
+
+Q: What is the rationale behind the "new"/"tried" table design? Were there any prior inspirations within the field of distributed computing?
+
+
+
 ##### References
 [1] Segwit: https://www.youtube.com/watch?v=OFfBRzh9HmU
 [2] BIP9: https://bitcoinmagazine.com/technical/bip-enabling-easier-changes-and-upgrades-to-bitcoin-1453929816
