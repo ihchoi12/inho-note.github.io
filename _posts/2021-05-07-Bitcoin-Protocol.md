@@ -109,10 +109,17 @@ Answer: 95% to minimize danger of chain split, but it makes a side-effect of giv
 
 # Week-4: P2P Network
 ### Tried Table
-- Tried: store public IP addrs of peers that the node has successfully established an incoming or outgoing connection
+- Store public IP addrs of peers that the node has successfully established an incoming or outgoing connection
 - The timestamp for the most recent successful connection to each peer is stored together.
-- The position in the table is decided by hash of the peer's 1) IP addr; 2) group (/16 IPv4 prefix containing it's IP addr; 3)
-- 
+- The position in the table is decided by hash of the peer's 1) IP addr; 2) group (/16 IPv4 prefix containing it's IP addr);
+- When the location for a new peer is already occupied, the tried table priorities the peer observed more recently
+
+### New Table
+- 256 bucket, 64 IPs in each bucket
+- Store public IP addrs of peers that the node has not yet initiated a successfuly connection
+- How to learn those IP addrs? From DNS seeders or ADDR msgs
+- The inserted IP addr belongs to 1) group (/16 IPv4 prefix containing it's IP addr); and 2) source group (group of the peer sending the inserted IP)
+- If a bucket is full, isTerrible func is called => evict 1) > 30 days old; 2) had too many failed connection attempts;
 
 Q: What is the rationale behind the "new"/"tried" table design? Were there any prior inspirations within the field of distributed computing?
 
