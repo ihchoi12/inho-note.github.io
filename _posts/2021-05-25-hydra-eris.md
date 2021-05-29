@@ -28,7 +28,28 @@ tags:
 
 ### In-network Concurrency Control
 - Groupcast: deliver msg to set of multicast groups
-- Multi-stamp: set of sequencer numbers assigned to each groupcast msg
+- Use special IP addr which is specially processed 
+- Additional header: a list of destination groups (between IP and UDP)
+- DL replica: leader of it's shard
+\
+- Multi-stamp: set of <group-id, seq-num> assigned to each groupcast msg
+- In case of packet drop, receiver can request the missing pkt by the seq-num even for other group-ids
+
+### FC: Failure Coordinator
+- handle pkt drops and sequencer failures (through interaction with replicas)
+
+### Fault Tolerance and Epoch
+- Epoch-num: to handle sequencer failure (maintained by the sequencer), added to the GC header
+- Controller handle sequencer failover (sequencer timeout => selecte new sequencer => epoch-num++)
+- Receive see higher epoch-num => do view-change
+
+### 5 Protocols of Eris
+1) normal case: txn-index (i.e., opnum), cannot process TXs in *perm-drops* (to be NO-OP) or *temp-drops* (candidates to be NO-OP)
+2) handling pkt drops
+3) DL change (within a shard)
+4) Epoch change
+5) Synchronization
+
 
 ### Support General TXs
 - Use independent TXs as a building block
@@ -36,8 +57,24 @@ tags:
 - commit *preliminary TXs* with a single *conclusory independent TX*
 - it imposes locking overheads, but still efficient by using the efficient underlying independent TX primitive.
 
-
 # Implementation
+### SDN Controller
+- POX
+- manages GC membership
+- install routing rules (GC pkts through the seqeuncer)
+### End-host lib
+- API for sending and receiving multi-sequencer GC pkts
+- Monitors incoming multi-stamp (to send DROP of NEW-EPOCH notifications)
+### P4 Sequencer
+- How many num_shards can be suported? RMT: 32 stages, 4-6 registers per stage => 128-192 destinations per pkt
+- Pkt header bytes? 512-byte => assuming 32-bit group-id and seq-num, 116 destinations
+- Beyond that? need special-case handling
+
+
+
+
+
+# Codebase
 [kvClient.cc]
 #1: decide independent vs multi-phase TX 
 #2: randomly select n ops: keys and their shards (say m shards) (wPer% PUT, rest GET)
