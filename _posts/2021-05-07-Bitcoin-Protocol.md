@@ -121,8 +121,17 @@ Answer: 95% to minimize danger of chain split, but it makes a side-effect of giv
 - The inserted IP addr belongs to 1) group (/16 IPv4 prefix containing it's IP addr); and 2) source group (group of the peer sending the inserted IP)
 - If a bucket is full, isTerrible func is called => evict 1) > 30 days old; 2) had too many failed connection attempts;
 
-Q: What is the rationale behind the "new"/"tried" table design? Were there any prior inspirations within the field of distributed computing?
+### How a node choose an IP to make an outgoing connection?
+1) Choose a table between New and Tried
+2) Select an IP from the chosen table (baised toward 'fresher' timestamps)
+3) Attempt an outgoing connection to that IP
 
+
+Q: What is the rationale behind the "new"/"tried" table design? Were there any prior inspirations within the field of distributed computing?
+1) To make the list of peers of a bitcoin node various in terms of their IP prefix group. Since normally an IP prefix group is owned by a single party, distributing these of the peers prevents a single malicious party from dominating all the connections of some nodes.
+2) To balance the p2p connections of a bitcoin node between new nodes and the other nodes it has been connected to before.
+
+Additional Q: Since Bitcoin v0.10.1, the Bitcoin banned other nodes from directly insert their IP addresses to the Tried table of a node. What would be the main issue this patch tried to solve? 
 
 
 ##### References
