@@ -134,6 +134,7 @@ Q: What is the rationale behind the "new"/"tried" table design? Were there any p
 Additional Q: Since Bitcoin v0.10.1, the Bitcoin banned other nodes from directly insert their IP addresses to the Tried table of a node. What would be the main issue this patch tried to solve? 
 
 
+
 ##### References
 [1] Segwit: https://www.youtube.com/watch?v=OFfBRzh9HmU
 [2] BIP9: https://bitcoinmagazine.com/technical/bip-enabling-easier-changes-and-upgrades-to-bitcoin-1453929816
