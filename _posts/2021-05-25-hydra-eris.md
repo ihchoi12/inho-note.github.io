@@ -92,8 +92,17 @@ txn-id> to all replicas;
 #2: randomly select n ops: keys and their shards (say m shards) (wPer% PUT, rest GET)
 [client.cc]
 #1: separate ops by shard => m msgs (containing ops to the shard)
-#2: serialize each msg to request => map(shard, request)
-
+#2: serialize each msg to request => map(shard_num, request)
+#3: Notice("TxnClientCommon::Invoke requests");
+[txnclientcommon.cc]
+#1: Invoke protoClient->Invoke
+[eris/client.cc]
+#1: ErisClient::Invoke (line 62)
+#2: Prepare replies map (shard_num, empty_string)
+#3: ErisClient::InvokeTxn
+#4: clear existing (old) replies, ++txnid
+#5: Prepare a request protobuf => for each participating shard, set the ShardOp and create QuorumSet => point this request by the request msg
+#6: SendRequest()
 
 
 ##### References
