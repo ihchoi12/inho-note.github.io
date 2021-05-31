@@ -131,8 +131,9 @@ Q: What is the rationale behind the "new"/"tried" table design? Were there any p
 1) To make the list of peers of a bitcoin node various in terms of their IP prefix group. Since normally an IP prefix group is owned by a single party, distributing these of the peers prevents a single malicious party from dominating all the connections of some nodes.
 2) To balance the p2p connections of a bitcoin node between new nodes and the other nodes it has been connected to before.
 
-Additional Q: Since Bitcoin v0.10.1, the Bitcoin banned other nodes from directly insert their IP addresses to the Tried table of a node. What would be the main issue this patch tried to solve? 
-
+Additional 
+Q1: Since Bitcoin v0.10.1, the Bitcoin banned other nodes from directly insert their IP addresses to the Tried table of a node. What would be the main issue this patch tried to solve? 
+Q2: How does a fixed set of 4 outbound peers get chosen? In what circumstances would you evict or change them?
 
 
 ##### References
