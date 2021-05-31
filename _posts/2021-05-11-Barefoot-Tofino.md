@@ -16,7 +16,8 @@ Before start, TCP/IP model has mostly replaced the tradinal internet communicati
 - To interface with the running P4 program 
 - Load program-dependent APIs, and initialize Thrift server for them
 - Thrift: SW framework to develop RPC handling among different languages
-- Once the driver is started, we will see the bfshell prompt 
+- Once the driver is started, we will see the bfshell prompt
+- Configuration by a JSON file 
 ##### BF-Shell: Barefoot Interactive Shell
 - *bfshell>* is the top-level
 - we can access various subsystems from here
@@ -31,7 +32,9 @@ Before start, TCP/IP model has mostly replaced the tradinal internet communicati
 - *bfrt_root* is the root object
 - From this, we can access ongoing P4 programm and its objects
 
-### bfrt_server vs bfrt_client
+### bfrt_client vs bfrt_server
+- bfrt_client: SDN-like remote controller implementation
+- bfrt_server: replaced by Thrift for now (same role) i.e., take RPC from bfrt_client and handle
 
 
 ##### References
