@@ -126,14 +126,61 @@ Answer: 95% to minimize danger of chain split, but it makes a side-effect of giv
 2) Select an IP from the chosen table (baised toward 'fresher' timestamps)
 3) Attempt an outgoing connection to that IP
 
-
-Q: What is the rationale behind the "new"/"tried" table design? Were there any prior inspirations within the field of distributed computing?
-1) To make the list of peers of a bitcoin node various in terms of their IP prefix group. Since normally an IP prefix group is owned by a single party, distributing these of the peers prevents a single malicious party from dominating all the connections of some nodes.
-2) To balance the p2p connections of a bitcoin node between new nodes and the other nodes it has been connected to before.
+### Discussion Question
+Q. What is the rationale behind the "new"/"tried" table design? Were there any prior inspirations within the field of distributed computing?
+A1) To make the list of peers of a bitcoin node various in terms of their IP prefix group. Since normally an IP prefix group is owned by a single party, distributing these of the peers prevents a single malicious party from dominating all the connections of some nodes.
+A2) To balance the p2p connections of a bitcoin node between new nodes and the other nodes it has been connected to before.
 
 Additional 
 Q1: Since Bitcoin v0.10.1, the Bitcoin banned other nodes from directly insert their IP addresses to the Tried table of a node. What would be the main issue this patch tried to solve? 
 Q2: How does a fixed set of 4 outbound peers get chosen? In what circumstances would you evict or change them?
+
+
+# Week-5: Script & Wallets
+### Bitcoin Wallets [5]
+- A program to send, receive, store, and monitor BTC balances (just like Gmail or Outlook managing emails)
+- Wallets interface with the BTC blockchain to monitor BTC addresses on the blockchain and update their own balance with each TX
+- What is BTC address? an address used to send or receive BTC (acts like an email address), and its generated from private_key of its wallet
+- A wallet is defined by its private_key
+- For privacy, each private_key should be used only once, so a new private_key needs to be generated for each TX (disadvantage)
+- To sum up, the wallet's core functions: creation, storage, and use of private_key (i.e., it automates Bitcoin's complex cryptography for users)
+
+### HD Wallet (Hierarchical Deterministic Wallet) [6]
+- An evolved version of wallet which generates all of its keys and addresses from a single source
+- **Hierarchical** means the keys and addresses can be organized into a tree
+- **Deterministic** means the keys and addresses are always generated in the same way
+- Most importantly, the user can generate new public_keys without knowing the private_key
+- It generates an initial phrase (known as a seed), which is a string of common words, instead of the long confusing private_key
+- If a wallet gets destroyed or stolen, the user can enter the seed to reconstruct the private_key
+- Also, an HD wallet can generate many BTC addresses from the same seed, and all TXs sent to addresses created by the same seed become a part of the same wallet
+- Since those private_key and seed have complete power over the user's BTCs, they must be kept secret and safe
+
+### How It Works?
+- A standard BTC wallet will create a *wallet.dat* file
+- This file should be backed up by copying it to a safe location
+- On the other hand, HD wallet will supply the user with a seed (up to 24 words) which should be written down in a safe place too
+
+
+### Discussion Question
+Q. Why is the internal chain not visible outside of the wallet if it uses public derivation?
+A. In order to discuss this question, we need to understand the HD wallet first. 
+HD wallet is an evolved version of BTC wallet. The BTC wallet is a program to manage the user's BTC balances through the asymetric key operations. 
+The user can generate his private_key to verify his ownership of the wallet or manage the BTC balances in his wallet. 
+Also the user can generate public_key (using the private_key) so that other users can generate some TXs involving him.
+Here, the private_key and public_ket pair should be generated for each TX, because otherwise the consistent key information can be used to compromise the user's
+information. 
+However, managing the key pairs generated every time the user receives a new TX is burdensome. 
+So, HD wallet enables generating a large number of keys in a hierarchical way, meaning that a newly generated key is used again to generate another new key.
+Public derivation is the way of deriving the new keys (child keys) from the parent public_keys without access to the corresponding private_key.
+Then, what is external and internal chain? The separation of them comes from BIP32.
+External chain is used for addresses that are meant to be visible outside of the wallet (e.g. for receiving payments). Internal chain is used for addresses which are not meant to be visible outside of the wallet and is used for return transaction change.
+So, using public derivation means that it is another user outside of the wallet who is trying to send some BTC to the wallet, so internal chain should not be visible to it (otherwise, the external user can see some inforamtion in the internal chain like BTC spending of the waller owner)
+
+
+
+
+
+
 
 
 ##### References
@@ -141,6 +188,8 @@ Q2: How does a fixed set of 4 outbound peers get chosen? In what circumstances w
 [2] BIP9: https://bitcoinmagazine.com/technical/bip-enabling-easier-changes-and-upgrades-to-bitcoin-1453929816
 [3] https://bitcoin.stackexchange.com/questions/66396/how-miners-on-the-same-pool-search-non-overlapping-sets-of-nonce-candidates-alre
 [4] https://blog.bitmex.com/an-overview-of-the-covert-asicboost-allegation-2/
+[5] https://www.youtube.com/watch?v=A1Pl5hYHXiI
+[6] https://learnmeabitcoin.com/technical/hd-wallets
 
 [jekyll-docs]: https://jekyllrb.com/docs/home
 [jekyll-gh]:   https://github.com/jekyll/jekyll
