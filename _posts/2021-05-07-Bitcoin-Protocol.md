@@ -177,6 +177,9 @@ External chain is used for addresses that are meant to be visible outside of the
 So, using public derivation means that it is another user outside of the wallet who is trying to send some BTC to the wallet, so internal chain should not be visible to it (otherwise, the external user can see some inforamtion in the internal chain like BTC spending of the waller owner)
 
 
+### Additional Question 
+- What is the potential vulnerability of public child key derivation in HD wallet, and how hardened child key derivation defends against it?
+- https://www.oreilly.com/library/view/mastering-bitcoin/9781491902639/ch04.html
 
 
 
