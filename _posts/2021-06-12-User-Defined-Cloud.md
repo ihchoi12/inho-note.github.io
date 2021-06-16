@@ -48,6 +48,12 @@ Today's cloud doesn't have right services for niche applications, so users have 
 ### How can the provider achieve user's specification?
 - Idea: to develop HW and SW layers in a fine-grained way and put them together on demand from users
 
+
+# Question
+- So, does UDC mean that the user will be assigned with the resources as he specifies execlusively? No sharing? 
+- Storage units, computation units, etc. must be shared. Then how it can solve the security issues?
+- Also, how can it be used on-demand? If the resources are used by one user execlusively, its not on-dmeand already, isn't it?
+
 ##### References
 [1] https://sigops.org/s/conferences/hotos/2021/papers/hotos21-s02-zhang.pdf
 [2] https://www.youtube.com/watch?v=bd-06tw769o
