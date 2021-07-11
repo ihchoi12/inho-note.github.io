@@ -9,7 +9,7 @@ tags:
 
 ### Terminologies
 - Preemption: forcefully pause a running process (with PCB stored for resume later) and take the next ready process to the CPU 
-- Context Switching: changing the process context (PCB) for the preemption
+- Context Switching: Performed by dispatcher. Changing the process context (PCB) and state of two processes (1 Ready and 1 Run) for the preemption.
 - (CPU) Time Quantum: a time slot (duration) assigned to a process to use CPU (once expired, preemption happens)
 - Degree of Multi-programming: the max # of processes in ready that RAM can hold at a time
 
@@ -66,11 +66,23 @@ State transitions happen by OS or intrinsic logic of the process
 - Killing/Delete: the process is over
 
 
-##### 3 types of decisions in state transitions
-- Long-term: 
--- at *New* state, how many processes should be created (this decision lasts for the entire process), it decides the degree of multi-programming, 
-- Short-term: at *Ready* state, which ready process to schedule (this decision lasts only during the *Run* state)
-- Medium-term: at *Ready* or *Block* state, whether to suspend the process or not
+# Schedulers
+### 3 types of schedulers in state transitions 
+All of them affects performance
+##### Long-term: 
+- At *New* state. 
+- How many processes should be created (this decision lasts for the entire process).
+- It decides the degree of multi-programming. Affects system performance significantly (should balance CPU-bound and I/O-bound processes for better performance). 
+##### Short-term: 
+- At *Ready* state
+- which ready process to schedule (this decision lasts only during the *Run* state). 
+- Then, dispatcher handles the context switching.
+- Good short-term scheduler make the decision such that minimizes the context switching time (which depends on the size of context to be changed)
+##### Medium-term: 
+- At *Ready* or *Block* state, 
+- Whether to suspend a process or not
+- Suspension of a process cause *swapping* -- moving a process from RAM to disk, and getting it back
+- Good midium-term scheduler minimizes the swapping overheads
 
 
 # Introduction
