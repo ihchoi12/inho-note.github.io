@@ -7,7 +7,11 @@ tags:
   - OS
 ---
 
-
+### Terminologies
+- Preemption: forcefully pause a running process (with PCB stored for resume later) and take the next ready process to the CPU 
+- Context Switching: changing the process context (PCB) for the preemption
+- (CPU) Time Quantum: a time slot (duration) assigned to a process to use CPU (once expired, preemption happens)
+- Degree of Multi-programming: the max # of processes in ready that RAM can hold at a time
 
 # How process (or program) works?
 ##### Life-cycle of a program
@@ -40,10 +44,34 @@ tags:
 - Protection: prevent a process from accessing other processes' data
 * OS maintains the linked-list of PBCs
 
-
 ##### Two types of time of a process
 - CPU time
-- I/O time
+- I/O time (I/O can be perforemd w/o RAM, so the process can be in disk during this time)
+
+##### States of a process
+- New (when the process is being created by OS, => program is being taken from disk)
+- Ready (once the creation of process is completed, # of ready processes RAM can hold at a give time is limited => process is on the RAM)
+- Run (the ready process has been chosen out of other ready processes according to the strategy, and is running => process is on the RAM)
+- Block or Wait (when the process is in I/O time and doesn't need for CPUs. Once finishes I/O, go back to Ready state. => process is on RAM)
+- Termination or Completion (once the process is done, the process will be killed and it's all traces like PCB context are deleted => process is deleted from RAM)
+- Suspend Ready (the process was in Ready, then a new important process is created making RAM reaches degree of multi-programming, and this process is the least important according to the scheduling algorithm, so it's kicked out to the disk and is waiting to be restored => process on disk)
+- Suspend Wait or Suspend Block: (similar as Suspend Ready, but kick out Block state process instead of Ready, which is more reasonable => process on disk)
+------------
+State transitions happen by OS or intrinsic logic of the process
+
+##### Operations on process
+- Creation: the process is placed on RAM and becomes ready
+- Schedule (dispatch): the process is chosen and assigned to use CPU
+- Execute: the process is executed by CPU
+- Killing/Delete: the process is over
+
+
+##### 3 types of decisions in state transitions
+- Long-term: 
+-- at *New* state, how many processes should be created (this decision lasts for the entire process), it decides the degree of multi-programming, 
+- Short-term: at *Ready* state, which ready process to schedule (this decision lasts only during the *Run* state)
+- Medium-term: at *Ready* or *Block* state, whether to suspend the process or not
+
 
 # Introduction
 ### What is OS?
@@ -60,9 +88,11 @@ tags:
 - Single computer, queue of jobs (FIFO),
 - Can move on to next job iff the previous job is finished (starvation: waste of idle resource e.g., CPU or I/O), low efficiency
 - Not interactive since an interactive process has to wait until all previous jobs are finished 
-##### multi-programming
+##### multi-programming w/o preemption
+- It has multiple processes in 'Ready' state
 - When a job is taking I/O resource but not CPU, the other job can take CPU (i.e., no CPU idle time)
-##### multi-programming + preemption: multi-tasking
+##### multi-tasking: multi-programming with preemption
+- Also called Time Sharing
 - CPU can be multiplexing multiple jobs even before completing them (i.e., preemptive) 
 - Interactive
 ##### multi-processing
@@ -75,6 +105,8 @@ tags:
 ##### Real-time
 - Requested jobs will be having some deadlines
 - If fails to meet the deadline, results can be discarded
+
+
 
 
 
