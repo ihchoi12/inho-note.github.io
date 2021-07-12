@@ -52,7 +52,7 @@ tags:
 - New (when the process is being created by OS, => program is being taken from disk)
 - Ready (once the creation of process is completed, # of ready processes RAM can hold at a give time is limited => process is on the RAM)
 - Run (the ready process has been chosen out of other ready processes according to the strategy, and is running => process is on the RAM)
-- Block or Wait (when the process is in I/O time and doesn't need for CPUs. Once finishes I/O, go back to Ready state. => process is on RAM)
+- Block or Wait (when the process is in I/O time or waiting for other resources currently unavailable, so doesn't need for CPUs. Once finishes I/O or using other resources, go back to Ready state. => process is on RAM)
 - Termination or Completion (once the process is done, the process will be killed and it's all traces like PCB context are deleted => process is deleted from RAM)
 - Suspend Ready (the process was in Ready, then a new important process is created making RAM reaches degree of multi-programming, and this process is the least important according to the scheduling algorithm, so it's kicked out to the disk and is waiting to be restored => process on disk)
 - Suspend Wait or Suspend Block: (similar as Suspend Ready, but kick out Block state process instead of Ready, which is more reasonable => process on disk)
@@ -65,6 +65,16 @@ State transitions happen by OS or intrinsic logic of the process
 - Execute: the process is executed by CPU
 - Killing/Delete: the process is over
 
+##### Time parameters of a process
+- Arrival Time: time at which the process enters into the ready state (ready queue)
+- Burst Time: the amount of CPU time required by the process to be completed (it's practically difficult to estimate before execution)
+- Completion Time: time at which the process finishes
+- Turn Around Time: Completion Time - Arrival Time
+- Waiting Time: time during which the process is waiting (to use CPU) in the ready queue or wait state 
+- Response Time: the first time at which the process is scheudled (dispatched) to CPU == duration of the first Waiting Time
+-----
+Turn Around Time = Completion Time - Arrival Time = Total Burst Time + Total Waiting Time
+
 
 # Schedulers
 ### 3 types of schedulers in state transitions 
@@ -72,7 +82,8 @@ All of them affects performance
 ##### Long-term: 
 - At *New* state. 
 - How many processes should be created (this decision lasts for the entire process).
-- It decides the degree of multi-programming. Affects system performance significantly (should balance CPU-bound and I/O-bound processes for better performance). 
+- It decides the degree of multi-programming. 
+- Affects system performance significantly (should balance CPU-bound and I/O-bound processes for better performance). 
 ##### Short-term: 
 - At *Ready* state
 - which ready process to schedule (this decision lasts only during the *Run* state). 
@@ -83,6 +94,24 @@ All of them affects performance
 - Whether to suspend a process or not
 - Suspension of a process cause *swapping* -- moving a process from RAM to disk, and getting it back
 - Good midium-term scheduler minimizes the swapping overheads
+
+### CPU scheduling
+- What? to pick a ready process and allocate it to CPU
+- Who? short-term scheduler
+- Where? from ready to running state
+- When? a process moves..
+  - run -> terminate (always)
+  - run -> wait (always)
+  - run -> ready (due to quantum expiration or a new process with higher priority) (always)
+  - new -> ready (not always)
+  - wait -> ready (not always)
+
+### Scheduling Algorithms
+##### FCFS
+- Criteria: arrival time
+- Mode: non-preemptive
+
+
 
 
 # Introduction
