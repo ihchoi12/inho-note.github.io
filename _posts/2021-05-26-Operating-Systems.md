@@ -108,9 +108,17 @@ All of them affects performance
 
 ### Scheduling Algorithms
 ##### FCFS
-- Criteria: arrival time
+- Criteria: the earlist arrival time
 - Mode: non-preemptive
-
+- Disadvantage: Convoy effect (a process with high burst time and low arrival time can cause later processes wait for long)
+##### SJF
+- To solve Convoy effect
+- Criteria: the shotest burst time
+- 
+  
+ 
+  
+  
 
 
 
