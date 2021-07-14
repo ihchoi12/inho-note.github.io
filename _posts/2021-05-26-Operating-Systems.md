@@ -114,7 +114,7 @@ All of them affects performance
 ##### SJF
 - To solve Convoy effect
 - Criteria: the shotest burst time
-- 
+- //HERE
   
  
   
