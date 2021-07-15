@@ -111,10 +111,39 @@ All of them affects performance
 - Criteria: the earlist arrival time
 - Mode: non-preemptive
 - Disadvantage: Convoy effect (a process with high burst time and low arrival time can cause later processes wait for long)
+- Queue is a suitable data structure to implement this with O(n)
 ##### SJF
 - To solve Convoy effect
-- Criteria: the shotest burst time
-- //HERE
+- Criteria: the shotest burst time (among the available process at the time) 
+- Mode: non-preemptive
+- The Convoy effect is not removed completely (ex. a high burst time process arrives a bit earlier than some low bursr time processes)
+- Min-heap is a suitable data structure to implement this with O(nlogn): logn for insertion or deletion
+- Known to be the best scheduling algorithm, but practically difficult to implement (why? hard to know the burst time before execution), so normally use it as a theoritical benchmark to compare with
+- Advantages
+  + Max Throughput (at any point of time). Why? Processes will be completed as early as possible 
+  + Min Avg WT & TAT
+- Disadvantages
+  + Starvation to longer tasks
+  + Not implementable in practice
+- (For approximate implementation) SJF with predicted BT. How to predict:
+  + Static: based on either process size or type (e.g., OS, user, foreground, background, etc.)
+  + Dynamic: based on simple AVG or exponential AVG
+
+##### Round Robin
+- FCFS with preemption
+- Most popular with various advantages:
+  + Practically implementable (not depending on the burst time)
+  + Implementable with a simple data structure like Queue
+  + No starvation
+- Excute a schedule process for only a particular time quantum (TQ), then preempt
+- Queue is a suitable data structure to implement the ready pool
+- The longer TQ, the less context switching (but more starvation, larger Response Time, so we should seek for balance)
+- TQ is infinite => FCFS
+
+
+##### LJF
+- Criteria: BT => Arrival Time
+- Mode: non-preemptive
   
  
   
