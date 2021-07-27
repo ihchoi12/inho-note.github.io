@@ -184,8 +184,46 @@ All of them affects performance
 - Requested jobs will be having some deadlines
 - If fails to meet the deadline, results can be discarded
 
+### OS Services
+- OS provides program execution environment and services for the programs and users
+- So, which services are provided?
+  + User Interface: to allow users to interact with OS
+    * CLI: user provides text-based commands to perform certain tasks by OS
+    * GUI
+  + Program Execution: load a program to RAM, and run it
+  + I/O Operations (in between processes and I/O devices)
+  + File System Manipulation
+  + Communications (between processes)
+  + Error detection (on the entire system)
+  + Resource Allocation
+  + Accounting (which user is using how much and what kind of resources)
+  + Protection and Security (even in a processes scale)
 
+##### User-OS interface
+- Some OS include the CLI in the kernel (the heart of OS)
+- But many OSes (e.g., Windows, Unix) treat the CLI as a special program
+- On systems with multiple CLIs, the command interpreters are known as shells
+  + Bourne Shell
+  + C Shell
+  + Bourne-Again Shell (BASH)
+  + Korn Shell
+  + etc.
+- Two approaches for executing the commands entered by user
+  + Command interpreter contains the code to run the tasks, so interpreter itself executes the code
+  + Command interpreter does not contain any codes, but the codes are written in certain programs, so the interpreter calls the program based on the entered commands  
 
+##### System Calls
+- Provide an interface to the services provides by OS
+- Two modes of operations where programs are executed
+  + User mode
+    * programs do not have direct access to the resources like memory, HW.
+    * If a program running on user mode crashes, the entire system does not crash (safer)
+    * most of programs are executed in user mode
+  + Kernel mode (privileged mode)
+    * programs have direct access to the resources
+    * If a program running on kernel mode crashes, the entire system will crash
+- If a user mode program needs to access the resources, it makes a call (system calls!) to OS to request that ==> Then, the program is switched to kernel mode (called Context Switching), so that it can access the resource
+- Definition of System Call: The programmatic way in which a computer program requests a service from the kernel of OS. These calls are generally written in C or C++.
 
 
 ##### References
