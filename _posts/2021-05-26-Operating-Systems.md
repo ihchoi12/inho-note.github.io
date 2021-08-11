@@ -157,9 +157,16 @@ All of them affects performance
 - Resource allocator (resource should be shared by many users or programs, or should be scheduled if not shareable)
 - Manager for memory, process, files, security (e.g., resource isolation), etc.
 
+##### History
+- evolve with Computer HW, app, and usage pattern 
+- There was NO OS for the first computers (e.g., ENIAC, Harvard Mark1) => not portable apps, inefficient
+
 ### Goal of OS
 - Convenience (e.g., for personal computer)
 - Efficiency (e.g., for servers)
+- Abstractions: users don't want to care about low-level details of large variations in HW configurations 
+- Programmability, Portability
+- Manage resources and coordination
 
 ### Type of OS
 ##### Batch OS: 
@@ -169,10 +176,15 @@ All of them affects performance
 ##### multi-programming w/o preemption
 - It has multiple processes in 'Ready' state
 - When a job is taking I/O resource but not CPU, the other job can take CPU (i.e., no CPU idle time)
+##### Time-sharing OS
+- allow multiple users to interact with machine
+- User job shceduling => illusion of concurrency 
+- memory management 
+- Virtualization of HW: each program executeds as if it has all the resources to itself (actually not) 
 ##### multi-tasking: multi-programming with preemption
 - Also called Time Sharing
 - CPU can be multiplexing multiple jobs even before completing them (i.e., preemptive) 
-- Interactive
+- Interactive 
 ##### multi-processing
 - Have multiple CPUs
 - Many processes can be supported simultaneously
