@@ -143,7 +143,8 @@ else
 
 ##### Overriding
 - Providing a specific implementation of a method in a subclass provided by its superclass
-- Although a subclass var is assigned to its superclass var, calling methods **invokes on the real object** (i.e., subclass) 
+- Although a subclass var is assigned to its superclass var, calling methods **invokes on the real object** (i.e., subclass)
+- If you want to define a method for only some of subclasses, define it in the superclass with some error msgs, and then define it specifically only in the subclass you want (by doing so, if the method is invoked by other subclasses which don't have this method, it will be invoked by the superclass showing the error msg)
 
 
 
