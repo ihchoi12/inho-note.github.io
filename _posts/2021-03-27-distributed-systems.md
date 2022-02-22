@@ -7,6 +7,70 @@ tags:
   - Test
 ---
 
+# State Machine Replication (SMR)
+Goal: agree on order of ops (i.e., sequential log of ops) \
+That is, different servers propose different ops for the same slot, so need consensus for their order
+
+### Primary-Backup Limitations
+- Split-brain: cannot know if a primary has failed or is just slow => if it's just slow, might end up with two primaries
+- View Server can prevent this issue. But it's a SFP.
+- Replicate View Server using Primary-Backup? Same issue again..
+- Q. How can we achieve SMR without relying on a single entity? A. Distributed Consensus
+
+### FLP: prove impossibility of a deterministic protocol to guarantee consensus in bounded time in asynchronous DS (even if only one server can fail)
+- Then, what shoud we do?
+- We still can achievethe distributed consensus with some assumptions
+
+### Paxos: 
+- Goal: consensus on a single value (note that it's not an order of ops by just one round of Paxos)
+- Under two assumptions: 1) majority are alive; 2) no failure for a sufficiently long period;
+
+##### Three types of players
+- Proposers: send (uniquely numbered) proposals with a value to be chosen (accepted by a majority)
+  * "accepted" is a local state, "chosen" is a global state of a 'proposal' (not a value), so a learner need to contact multiple acceptors to learn a chosen value
+- Acceptors: accept/reject proposals, collectively decide when a value is chosen
+- Learners: once a value is chosen, learn it
+- All these are logical roles (multiple roles can co-locate on the same physical node)
+
+##### Two rules
+1. Safety
+  * only a single proposed value can be chosen (that is, if a value is chosen, the event of chosen can happen only for the same value with a higher psn)
+  * only chosen values can be learned
+2. Liveness
+  * as long as there are proposals, there is a chosen one, and a process eventually learn it
+
+
+##### Hwo it works?
+- A proposer broadcast (prepare, psn: N)
+- Acceptors who receive (prepare, psn) promise to reject psn < N, and reply their (accepted, psn, val)
+- The proposer wait for the replies from a majority acceptors, and choose val in (accepted, psn, val) with the max psn, and send (accept, psn, val) to the majority acceptors who replied (Q. why explicitly only to the replied acceptors? can it be broadcast? no broadcast since it breaks safety) 
+- Acceptors who receive (accept, psn, val) and hasn't promised to reject psn accept it, and send (accepted, psn, val) to distinguished learner (DL)
+- If DL receives (accepted, psn, val) from a majority of acceptors, val is learned and broadcast (decided, val) to all learners 
+- If DL timeouts without learning a chosen value, it requests proposers to propose something again
+
+##### Distinguished Proposer (DP)
+- Why? Paxos does not guarantee liveness in the case that proposers compete each other recursively (promise 1 => promise 2 => reject 1 => promise 3 => reject 2 ..)
+- Of course, election of DP itself is a consensus, so it's not guaranteed that all nodes agree on a single DP, but it makes the Paxos more likely to reach the consensus eventually 
+
+
+### Then, how can we extend it to SMR (sequence of ops)? PMMC
+- A leader for all slots is elected by Paxos phase 1
+- Once elected, the leader runs only phase 2 for each proposal
+- If leader dies, other nodes repeat the process
+- Paxos ensure safety
+
+##### Roles in PMMC
+- Replicas (like learners): maintain the log of ops, state machine (apply decided ops) 
+- Leaders (like proposers): try to elect themselves, drive consensus protocol
+- Acceptors (like acceptors): vote for leaders, accept ballots: (seq-num).(leader-id)
+
+##### How it works
+- leader 1 broadcast p1a(ballot_num: 0.1) to acceptors 
+- An acceptor receives p1a(1, 0), set ballot_num: 0.1 (promise), and reply p1b(0.1, accepted: [])   
+- leader 1 receives p1b(0.1, []) from majority acceptors, then send p2a
+
+
+
 # Transaction Concept
 Goal: to group a set of operations into an **atomic** unit \
 4 guarantees: ACID \
@@ -43,7 +107,13 @@ history of operations is equivalent to a sequencial order **respecing local orde
 - Why TPL guarantee **serializability**? exclusiveness of write-lock and two-phased approach prevent conflicts of TXs
 - Why TPL guarantee **strict serializability**? strict means: if TX B comes in after A commits (in real-time), B is ordered after A. In this case, expanding phase for A will be started first, so B cannot be ordered before A
 
-Useful Commands for Hydra
+
+
+
+
+
+
+### Useful Commands for Hydra
 
 $ lscpu | grep NUMA
 // to check NUMA node and CPU core mappings 
