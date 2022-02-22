@@ -50,7 +50,7 @@ That is, different servers propose different ops for the same slot, so need cons
 
 ##### Distinguished Proposer (DP)
 - Why? Paxos does not guarantee liveness in the case that proposers compete each other recursively (promise 1 => promise 2 => reject 1 => promise 3 => reject 2 ..)
-- Of course, election of DP itself is a consensus, so it's not guaranteed that all nodes agree on a single DP, but it makes the Paxos more likely to reach the consensus eventually 
+- Of course, election of DP itself is a consensus, so it's not guaranteed that all nodes agree on a single DP (multiple DP can exist), but it does not break the safety since its only for liveness (to make the Paxos more likely to reach the consensus eventually)
 
 
 ### Then, how can we extend it to SMR (sequence of ops)? PMMC
@@ -64,11 +64,23 @@ That is, different servers propose different ops for the same slot, so need cons
 - Leaders (like proposers): try to elect themselves, drive consensus protocol
 - Acceptors (like acceptors): vote for leaders, accept ballots: (seq-num).(leader-id)
 
-##### How it works
-- leader 1 broadcast p1a(ballot_num: 0.1) to acceptors 
-- An acceptor receives p1a(1, 0), set ballot_num: 0.1 (promise), and reply p1b(0.1, accepted: [])   
-- leader 1 receives p1b(0.1, []) from majority acceptors, then send p2a
+##### 
+- client sends request (A) to the replicas 
+- a replica forward A  
 
+##### Leader Election
+- When? 1) At the beginning of time; 2) When the current leader seems to fail (haven't header heartbeat msgs) 
+- Local states: is_active(false), ballot_num (0.0), proposals \[\] 
+- The leader broadcast p1a(0.0) to acceptors
+- Some acceptors reply p1b(0.1) and the leader fails to get mojority p1b(0.0, \[\]), so preempted (if a leader gets preeempted, don't try immediately again!)
+- The leader increase it's ballot_num to 1.0 (to be bigger than 0.1), and (if the current leader seems to fail) broadcast p1a(1.0)
+- The leader gets a majority p1b(1.0, \[\]), set is_active(true), put the accepted (idx, val) in p1b msgs with the highest ballot_num in proposals, then can start to send p2a msg  
+
+##### Acceptor's logic
+- leader 1 broadcast-with-retry p1a(ballot_num: 0.1) to acceptors 
+- An acceptor receives p1a(0.1), compare 0.1 to its current ballot_num (null now), set ballot_num: 0.1 (promise), and reply p1b(0.1, accepted: [])   
+- leader 1 receives p1b(0.1, []) from majority acceptors, then send-with-retry p2a(0.1, idx: 0, val: A)
+- An acceptore receives p2a(0.1, 0, A), compare ballot_num, accepte it ONLY IF THEY ARE EQUAL, set accepted \[<0.1, 0, A>\], reply p2b(0.1)
 
 
 # Transaction Concept
