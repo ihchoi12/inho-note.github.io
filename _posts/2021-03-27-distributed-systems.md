@@ -66,7 +66,9 @@ That is, different servers propose different ops for the same slot, so need cons
 
 ##### 
 - client sends request (A) to the replicas 
-- a replica forward A  
+- a replica broadcast proposal(idx, A) to all leaders
+- a leader receives proposal(idx, A), insert it in the proposals \[(idx, A)\], (if is_active), send p2a
+- if the leader knows that it's proposal is chosen (receive matching p2b from majority), broadcast the chosen (idx, val) to all replicas 
 
 ##### Leader Election
 - When? 1) At the beginning of time; 2) When the current leader seems to fail (haven't header heartbeat msgs) 
