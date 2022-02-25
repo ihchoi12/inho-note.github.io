@@ -57,6 +57,54 @@ tags:
 - Issue1: safety because everyting is done in user-space (originally kernel provides security, rate-limiting, isolation, ...)
 - Issue2: once DPDK binds to the NIC, that particular user program has the full control over the NIC (i.e., other programs cannot use the NIC anymore)
 
+### Kernel-bypassing with OS Protection
+- Key idea: separation of control plan and data plane
+- Control plane: setup policies (protection, rate limiting, sharing, etc)
+- Data plane: fast packet processing and forwarding
+
+# Read/Write Remote Server's Memory
+### Why Do We Want That?
+- common in supercomputing/HPC
+- increasingly popular in data center applications (data often doesn't fit in a single machine)
+
+### Kernel-bypassing not Enough for This?
+- The remote server's NIC receives a request pkt
+- The pkt is directly processed by a user program in the server 
+- The user program accesses the DRAM, and executes the request
+- Here, the user program use CPU to process packet (higher performance overhead, waste CPU cycle)
+- But! NICs can read/write local memory w/o CPU using DMA, so can we do it for remote memory as well?
+
+### RDMA
+##### Hige-level Idea
+- A (RDMA enabled) NIC receives a request pkt 
+- It bypasses CPU entirely (both kernel and user program)
+- Instead, directly access the local DRAM (remote memory for the request sender), executes the request, then send back the result
+##### How does NIC RDMA actually processes the pkts?
+Two types of RDMA request primitives
+- steps to use 1-sided primitives (READ, WRITE) in a RDMA program
+  * Register a memory region (RM: registered memory) to allow the RDMA on each of client and server node
+  * Pin RM into the physical memory (so that the RM is not swapped back to the disk)
+  * Once its done, RDMA on the server side will return a remote-key (rkey) which is a permission to access the RM
+  * The client receives rkey and address of RM from the server (now, RDMA connection setup is done!)
+  * Then, client generates 1) queue pair (send queue (SQ) and receive queue (RQ) -- receive queue is used for 2-sided RDMA only; 2) completion queue (CQ);
+  * Client RDMA application inserts the request (including the RM address and rkey) into the send queue, then starts to keep polling the CQ
+  * Once the NIC has a free cycle, it picks up the request in send queue and send it to the remote NIC
+  * The server NIC receives the request, verifies the rkey, DMA to the RM address, performs the request, get the result, and send it back to the client NIC
+  * Client NIC receives the result, writes it to the local RM, then puts the completion event in the CQ
+  * Client RDMA application sees the matching completion event in CQ, and learns that the requested data is in the local RM
+  * To sum, client uses CPU (to put the request in the SQ), but server bypasses CPU and kernel entirely
+- steps to use 2-sided primitives (SEND, RECV) in a RDMA program
+  * no connection is needed
+  * receiver side insert RECV request in RQ
+  * once the receiver NIC receives corresponding SEND request, take the RECV in RQ and write the data in SEND to the RM
+  * receiver also monitors the CQ (that is, it involves remote CPU as well, but not the kernel)
+  * similar to DPDK
+- Benefits: bypass CPU & kernel, zero-copy (between NIC, kernel and user-space)
+- Limitations: RDMA NIC caches the RDMA connection informaion (e.g., rkey, address) and queues of each local-remote pair on the NIC DRAM which has a limited size. So, the RDMA performance may go down with an increasing number of RDMA connections. In this case, 2-sided RDMA is preferred as no connection information is needed.
+
+
+# SmartNICs (46:00)
+
 
 
 # Operating Systems
