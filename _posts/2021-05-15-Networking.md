@@ -104,6 +104,13 @@ Two types of RDMA request primitives
 
 
 # SmartNICs (46:00)
+### Type1: SoC (System on Chips) SmartNICs
+- NIC with general purpose processing cores on the chip
+- we can write arbitrary programs and upload them to the NIC
+- On top of that, the NIC has several accelerating functions (RNG, encryption/decryption, (de)compression, Regex matching) which can be called during the pkt processing in our arbitray programs
+### Type2: FPGA-based SmartNICs
+- NIC with a big FPGA chip (instead of general-purpose cores)
+- Microsoft Catapult is one example 
 
 
 
