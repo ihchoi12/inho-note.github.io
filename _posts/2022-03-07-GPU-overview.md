@@ -28,6 +28,7 @@ NUMA is a system that is used in computers with multiple physical CPUs.
   
   
 ### CUDA: Compute Unified Device Architecture
+- Interface between general programs and GPU
 - Nvidia's SW framework for GPGPU (including libraries, compiler, API)
 - Supports many languages (C, C++, Fortran, OpenCL, ...)
 - To express parallel general-purpose computations
