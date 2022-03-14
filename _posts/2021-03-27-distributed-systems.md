@@ -7,6 +7,69 @@ tags:
   - Test
 ---
 
+# Distributed States
+## Network File System
+- Traditional FS locally manages files on a device
+- NFS stores files on a remote server (e.g., Dropbox), so that the files can be accessed anywhere via network
+
+### How it works?
+- a client (other user machines) fetchs data from server everytime it wants to access
+- two issues: high latency, increase load on the server
+- impvore: client-side cache (fetch first time, and store it on the local cache)
+- two benefits: low latency. reducd load on the server (exploiting **locality**)
+- Introduction of Distributed States: multiple client machines with their own cache for each
+- issue: a client want to write a file => write to it's local cache => other clients' state are old
+- this issue is handled in different ways depending on the systems
+* cache: to move data to where we want to use it
+* RPC: to move computation to where the data is
+
+### Example: NFS
+- developed by Sun Microsystems in 1984
+- design philosophy: simplicity
+- principle 1: stateless
+  * all essential information kept on server's disk
+  * can still cache in server memory (to save the memory access latency), but cannot depend on cache for correctness
+  * servers do not cache client information
+- principle 2: idempotent operations
+  * read and write at offset
+  * lookup
+
+##### NFS Update protocol
+- case: client writes to a file
+  * update local cache
+  * send write RPC request to server (client's write-through cache: keep re-sending until the server replies)
+  * server write data to disks, then reply back to the client
+  * (once the client receives the reply, it knows that the data is persisten on the server)
+- Issue1: write need to go through network, server need to access disk => slow
+- Issue2: some write operations are unnecessary if they are overwritten by later operations 
+- Issue3: other clients' cache still have old states
+- NFS solution: 1) periodic polling => eventually receive updates (NFS just accepts stale data in between pollings)
+
+### Example: Sprite
+- Unix-like distributed OS from Berkeley
+- Server tracks opend file state
+  * which clients are reading/writing files
+  * open()/close() needs to contact the server
+- Server uses write-back cache
+  * modified blocks are kept in memory
+  * writes back to disk every 30s
+
+##### Sprite consistency
+- leverage that server knows which clients are reading/writing a file
+- If only one client opens a file
+  * client can manage the data on it's cache locally
+  * no need to synchronously sends updates to the server
+  * writes back to the server every 30s
+- once server knows that multiple clients open a file and at least one is writing
+  * send uncache(file) to all cleints who are cacheing the file (server knows them from it's client information)
+  * clients reply back with the current cache of the file, and promise that they will not cache it anymore
+  * all clients become non-cacheable for the file
+  * from now on, all reads and writes go through the server (non-cacheable)
+  * server writes the up-to-date file to the disk every 30s
+- since server maintains the client information in the memory, recovery from server failure requires reconstruction of the client information for consistency
+- Sprite tradeoff between advantage (consistency, performance) and disadvantages (complexity, durability & recovery cost) 
+
+
 # State Machine Replication (SMR)
 Goal: agree on order of ops (i.e., sequential log of ops) \
 That is, different servers propose different ops for the same slot, so need consensus for their order
