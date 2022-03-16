@@ -87,6 +87,8 @@ That is, different servers propose different ops for the same slot, so need cons
 ### Paxos: 
 - Goal: consensus on a single value (note that it's not an order of ops by just one round of Paxos)
 - Under two assumptions: 1) majority are alive; 2) no failure for a sufficiently long period;
+- Important point!: a value is chosen only once a proposer with the value has been accepted by a majority. In other words, if a value has been accepted by a majority with different proposal-numbers, it has not been chosen.
+
 
 ##### Three types of players
 - Proposers: send (uniquely numbered) proposals with a value to be chosen (accepted by a majority)
