@@ -121,9 +121,9 @@ Cat* cat2 = (Cat*)(animal);
 ```
 
 ## Operators for Downcasting
-- [JAVA] *instanceof*: check the specific type of an object
-- [JAVA] *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class<T>)
-- [C++] *dynamic_cast*: if its safe and possible, return the address of converted object, otherise nullptr. (CAUTIOIN: to use *dynamic_cast*, the base class should be polymorphic – it must have at least one virtual function)
+- \[JAVA\] *instanceof*: check the specific type of an object
+- \[JAVA\] *cast() & isInstance()*: methods of object **Class** (useful when we handle generic types since we can treat them as Class\<T\>)
+- \[C++\] *dynamic_cast*: if its safe and possible, return the address of converted object, otherise nullptr. (CAUTIOIN: to use *dynamic_cast*, the base class should be polymorphic – it must have at least one virtual function)
 
 ```
 [JAVA]
@@ -148,6 +148,15 @@ else
 
 
 
+# Modularity
+- module: a separated component of a software
+- modularity: a design mechanism to divide a complex system into several modules
+- individual moduals can be integrated to develope a new system
+- a module should allow access to it's internal data only via well-defined interfaces (not directly)
+  
+  
+  
+  
 
 
 ##### References
