@@ -7,6 +7,13 @@ tags:
   - Test
 ---
 
+
+# RPC vs msg passing
+- RPC: similar to a function call, but the function is on a remote process
+- So, RPC is blocking mechanism: call a remote function, and block (at least this RPC thread) until the function is completed
+- Whereas, msg passing is non-blocking: send a message and continue to do sth else
+
+
 # Distributed States
 ## Network File System
 - Traditional FS locally manages files on a device
@@ -150,6 +157,139 @@ That is, different servers propose different ops for the same slot, so need cons
 - An acceptore receives p2a(0.1, 0, A), compare ballot_num, accepte it ONLY IF THEY ARE EQUAL, set accepted \[<0.1, 0, A>\], reply p2b(0.1)
 
 
+### Raft
+##### Issues in Paxos (or PMMC)
+- hard to understand
+- multi-paxos protocol not well specified
+- Separate roles: proposer, acceptor, learner, which doesn't match system deployment in practice 
+
+##### Idea
+- Only one role: replica (or server)
+- 3 states: Leader, Follower, Candidate (a server can only be in one state at a time)
+- Based on an operation log
+- 2 main protocols: 1) leader election; 2) log replication;
+
+##### Leader Election
+- Leader: similar to the distinguished leader in Paxos and active leader in PMMC
+  * Only leader handles client requests, and replicates them to followers
+  * sends periodic heartbeat msg to followers
+- Term: Divides time into terms: consecutive integers e.g., term 1, 2, 3, ...
+  * each term begins with an election
+  * at most one (or no) replica will win the election in a term
+  * each replica remember the latest term number observed, and ignore msg with lower term number
+- How it works
+  * all replicas begin as followers
+  * if a follower receives no msgs from the leader over timeout, start election
+  * the follower: term++, transition to candidate state, vote for itself, broadcast RequestVoteRPC
+  * a replica can only vote for at most one candidate in a term (FCFS)
+  * a candidate wins if receives majority votes, then transition to leader state
+  * votes can be split w/o forming a majority, then candidate will timeout ant start a new election again
+##### Log Replication
+- the leader receives a request
+- append the request to its log
+- broadcast AppendEntriesRPC with idx and term of the immediately preceding the new entry (retry until all followers respond)
+- a follower rejects the AppendEntries request if it doesn't have the preceding entry, otherwise append the new entry and reply to the leader (implication: no holes in the log)
+- after the entry is stored on majority, execute request and reply
+
+##### Log Commit
+- once the leader replicates an entry on a majority replicas (similart to 'chosen' in Paxos), the entry is committed
+- the latest committed entry is the log commit point
+- implies that all prior entries are also commited
+- so, safe to execute commands to the log commit point
+
+##### Handling Log Divergence
+- due to the network anomalies, a replica may have different log entries than other replicas
+- once a follower receives AppendEntriesRPC from the leader, it checks if the preceding entry is matching, if not delete it and reject the AppendEntriesRPC
+- then, leader retries AppendEntriesRPC with a lower indexed entry
+- repeat it until the follower finds a matching entry, then the leader sends all following entries to the follower (i.e., log duplication)
+- it means that the leader can modify other replicas' log, so we need to guarantee that a new leader has all committed entries so far (otherwise, commited entries can be overwritten by the leader), but how? 
+- Use majority intersection: a replica rejects RequestVoteRPC if it has more up-to-date (i.e., higher term number, longer log) log than the sender
+
+## SMR in real systems
+### Chubby
+- Distributed coordination service
+- Extensively used in Google
+- Apache Zookeeper: equivalent open-source version of Chubby 
+##### Chubby's goal
+- allow to synchronize and manage dynamice configuration state
+- fault-tolerant, available, and strongly consistent (linearizable)
+- intuition: only some parts of an app need consensus!
+  * dslabs-lab2: view service
+  * master/leader election in DFS
+  * Synchronization in multi-threaded programs
+- implementation: multi-Paxos SMR
+
+##### History
+- Google has many services that need reliable coordination
+- originally they did ad-hoc things (e.g., implement Paxos), which is very hard and prone to error
+- Let's build this service available to apps! 
+
+* Question: does locking mechanism requires linearizability to be correct? Cannot be sequential consistency?
+* Answer: Only linearizability. Why? The key difference between linearizability and sequential consistency: whether stale-read is allowed. If stale-read is allowed, the lock-server may falsely respond that no one is holding the lock, which is wrong.
+
+##### Interface
+- like a file system which provides:
+  * (small) files to record the metadata (e.g., who is the leader, etc.)
+  * locking
+  * sequencers: to assign seq_num to the locks to deal with the asynchrony (i.e., to discriminate if a request to a file is with an old lock)
+- API:
+  * Open, Close
+  * GetContents, SetContents, Delete
+  * Acquire, TryAcquire, Release (for locks)
+  * GetSequencer, SetSequencer, CheckSequencer
+
+##### Performance Optimization
+- so far, it's almost same as the multi-Paxos, which has all required guarantees
+- but the issue is performance
+- need to engineer it so that we don't need to run Paxos on every RPC
+- Idea: batching (for throughput), partitioning, non-replicated read requests, client caching
+
+##### lease for non-replicated read requests optimization
+- read requests need to be replicated only to guarantee that stale-read doesn't happen
+- stale-read happens when a replica falsely think that it's the leader and serve the read
+- but if we can guarantee that the read is executed by the actual leader, we don't actually need to replicate it
+- so we use lease: a new master gets lease and renew it while it is up, and only a master with valid lease can perform the read w/o replication
+- the lease doesn't handle the clock skew issue completely, so it doesn't 100% guarantee linearizability (but the probability of violation is very low with time synchronization protocols and conservative non-leaders who wait a bit longer than the timeout of the lease so that a new leader is not elected before the lease on the leader is actually expired)
+
+##### client caching
+- to reduce the number of clients' RPCs to Chubby
+- once a client reads a file, cache the file data and metadata
+- for linearizability, write-through, write-invalidate cache
+  * Master tracks which clients might have file cached
+  * Sends invalidations on update
+
+
+### Google File System (GFS)
+- Google needed a DFS to store search index
+- why not use existing FS (e.g., NFS, AFS, etc.)?
+  * very differnet workload chateristics
+  * Require strong fault tolerance because components fail constantly 
+- Require high throughput and bandwidth (latency is a secondary concern)
+
+##### Workload
+- most of files are very large (multi-GB) => no need to be optimized for small files
+- reads: small random reads and large streaming reads
+- writes: 
+  * many files written once (i.e., immutable), other files appended to
+  * so, small random writes are very rare
+##### interface
+- app-level library, not a POSIX file system like NFS
+- function calls: create, delete, open, close, read, write
+  * concurrent writes are not guaranteed to be consistent
+- record append operation: guaranteed to be atomic and consistent
+- snapshot operation
+
+##### Architecture
+- each file stored as 64MB chunks
+- each chunk on 3+ chunkservers
+- a single (replicated) GFS master stores metadata only
+
+
+
+
+
+
+
 # Transaction Concept
 Goal: to group a set of operations into an **atomic** unit \
 4 guarantees: ACID \
@@ -198,8 +338,61 @@ history of operations is equivalent to a sequencial order **respecing local orde
 
 
 
+# Byzantine Fault Tolerance
+### Byzantine Fault
+- faulty nodes can take arbitrary actions
+
+### BFT SMR
+- assume f replicas are Byzantine faulty
+- still want to guarantee linearizability
+- how many nodes do we need?
+  * let's say we have n nodes
+  * since there are f faulty nodes, the system must be able to reach consensus with at least n-f nodes
+  * but actually faulty nodes could be in those n-f nodes
+  * so there are at least n-2f benign nodes among those n-f nodes, and it should be bigger than f
+  * n-2f > f ==> n > 3f
+- What is the quorum here?
+  * majority is not enough (why? majority intersection is at least one, but what if the one is byzantine faulty?)
+  * so we need at least f+1 intersection (i.e., at least one in the intersection is benign)
+  * so, quorum is 2f+1
+
+### PBFT
+- progress through a series of views
+- a single primary associated with each view
+- the primary assigns the command a slot-num and forwards to backups
+
+##### How to handle byzantine faults (Idea)
+- Case: primary sends a wrong result to the client
+  * all replicas send replies directly to the client (iff the command is committed)
+  * clients wait for f+1 matching replies
+  * then, at least 1 reply is non-faulty (i.e., the mathicng reply is basically the non-faulty), and it is committed, so it's correct reply
+- Case: primary assigns different commands to the same slot-num (i.e., equivocation)
+  * we cannot rely only on the primary's msg
+  * so, replicas exchange information received from primary (to make sure primary is not equivocating)
+- Case: primary ignores clients, or any other ways to prevent progress
+  * backups do a view-change protocol when timing out committing client requests
+- Case: primary or backups impersonate other nodes
+  * sign all msgs using cryptography (public&private key)
+
+##### Protocol Overview (3 sub-protocols)
+- 1. Normal operations
+  * phase1: pre-prepare
+  * phase2: prepare
+  * phase3: commit
+- 2. View change
+- 3. Garbage Collection
+
+##### Phase1: Pre-prepare
+- client sends request (m) to the primary 
+- primary broadcast the request to all backups (with view_num (v), slot_num (n))
+  * <<PRE_PREPARE, v, n, D(m)>_sign_, m>
+  * D() is a hash digest operation
+  * sign is an expensive operation, so use D(m) instead of m itself (m could be very large)
+  * backups can easily verify if m and D
 
 
+Q. what if a faulty primary broadcast a wrong request (m) to backups?
+A. it cannot happen because m is signed by the client
 
 ### Useful Commands for Hydra
 
