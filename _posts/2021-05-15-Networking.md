@@ -4,9 +4,31 @@ date: 2021-05-12
 categories:
   - OS
 tags:
-  - IRQ
+  - 
 ---
 
+# PCIe slots
+- Peripheral Component Interconnect Express slots
+- Used to connect peripheral devices (e.g., graphics cards, expansion cards, USB adapters) to the computer's motherboard 
+- Several types depending on the number of data links - called PCIe lanes: PCIe x16 has 16 lanes
+
+### PCIe versions
+- It's assigned to both sides: slots and peripheral devices
+- 2004: PCIe 1.0 - 250MB/s per lane
+- 2007: PCIe 2.0 - 500MB/s per lane
+- 2010: PCIe 3.0 - 985MB/s per lane
+- 2017: PCIe 4.0 - 1.97GB/s per lane
+
+
+### How PCIe handles data?
+- Data is communicated to and from PCIe slots via PCIe lanes 
+- Given the data speed on a single lane is fixed, having more lanes means more data is communicated per unit time (faster)
+- Usually the PCIe slot with more lane is physically bigger 
+
+### High compatibility of versions and slots' size
+- PCIe 3.0 grphics card connected to PCIe 2.0 slot => works find with PCIe 2.0 speed
+- An expansion card requiring 4 lanes can be connected to a PCIe x16 slot
+- A device with x16 PCIe card can be connected to a PCIe x4 slot with x16 size, or open-ended slots (the speed will be PCIe x4)
 
 # NIC
 - a device (a piece of peripherals) to enable a computer to communicate with other devices in the network
@@ -16,7 +38,7 @@ tags:
 - ASIC
 
 ### NIC Driver
-- computerized instructions and information requird by NIC to operate
+- a programmed set of instructions and information requird by NIC to operate
 - usually written in C/C++
 
 ### Some Example Functions of NICs
