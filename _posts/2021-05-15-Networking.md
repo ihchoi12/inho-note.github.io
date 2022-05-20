@@ -86,30 +86,31 @@ tags:
 
 # Read/Write Remote Server's Memory
 ### Why Do We Want That?
-- common in supercomputing/HPC
+- we want to read/write other server's memory (not local memory)
+- its common in supercomputing/HPC
 - increasingly popular in data center applications (data often doesn't fit in a single machine)
 
 ### Kernel-bypassing not Enough for This?
 - The remote server's NIC receives a request pkt
 - The pkt is directly processed by a user program in the server 
 - The user program accesses the DRAM, and executes the request
-- Here, the user program use CPU to process packet (higher performance overhead, waste CPU cycle)
+- Here, the user program on the remote server uses CPU to process packets and execute requests (higher performance overhead, waste CPU cycle)
 - But! NICs can read/write local memory w/o CPU using DMA, so can we do it for remote memory as well?
 
 ### RDMA
 ##### Hige-level Idea
 - A (RDMA enabled) NIC receives a request pkt 
 - It bypasses CPU entirely (both kernel and user program)
-- Instead, directly access the local DRAM (remote memory for the request sender), executes the request, then send back the result
-##### How does NIC RDMA actually processes the pkts?
+- It directly accesses the local DRAM (remote memory for the request sender), executes the request, then send back the result
+##### How does RDMA NIC actually processes the pkts?
 Two types of RDMA request primitives
 - steps to use 1-sided primitives (READ, WRITE) in a RDMA program
-  * Register a memory region (RM: registered memory) to allow the RDMA on each of client and server node
+  * Register a memory region (RM: registered memory) on each of client and server node to allow the RDMA 
   * Pin RM into the physical memory (so that the RM is not swapped back to the disk)
   * Once its done, RDMA on the server side will return a remote-key (rkey) which is a permission to access the RM
   * The client receives rkey and address of RM from the server (now, RDMA connection setup is done!)
   * Then, client generates 1) queue pair (send queue (SQ) and receive queue (RQ) -- receive queue is used for 2-sided RDMA only; 2) completion queue (CQ);
-  * Client RDMA application inserts the request (including the RM address and rkey) into the send queue, then starts to keep polling the CQ
+  * Client RDMA application posts the request (including the RM address and rkey) into the send queue, then starts to keep polling the CQ
   * Once the NIC has a free cycle, it picks up the request in send queue and send it to the remote NIC
   * The server NIC receives the request, verifies the rkey, DMA to the RM address, performs the request, get the result, and send it back to the client NIC
   * Client NIC receives the result, writes it to the local RM, then puts the completion event in the CQ
