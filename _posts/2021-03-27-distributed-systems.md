@@ -411,20 +411,61 @@ history of operations is equivalent to a sequencial order **respecing local orde
   * view
   * seq_num
   * hash(request msg) // sign upto this point
-- If a backup receives 2f matching PREPAREs: 
+- Once a backup collects 2f matching PREPAREs: 
   * it's guaranteed that it's the ONLY request that can be prepared for the view and seq_num
   * why 2f not 2f+1? one from primary received already by PRE-PREPARE
-  * It's called that the (view, seq_num) has the Prepare Certificate (i.e., no other perpare certificate with other requests exist)
+  * It's called that the (view, seq_num) has the Prepare Certificate (i.e., no other perpare certificate with other requests exist for the same view and seq_num)
 
 
 ##### Phase3: Commit
 - Why? Perpare Certificate guarantees that no other requests can be perpared for the same (view, seq_num), howerver it deosn't guarantee for (view', seq_num). To prevent this, we need to ensure that there are enough replicas with the same Prepare Certificate.
-- 
+- Each replica who has Perpare Certificate broacasts COMMITs:
+  * view
+  * seq_num
+  * hash(request msg) // sign upto this point
+- Once a replica collects 2f+1 matching COMMITs, it has Commit Certificate:
+  * every 2f+1 nodes intersects at least f+1 nodes, and at least one of them is correct
+  * that is, at least 1 node's COMMIT is correct (i.e., it has the corresponding Perpare Certificate)
+  * it means that we can trust the 2f+1 COMMITs (i.e., 2f+1 nodes have the matching Perpare Certificate, and it will make the request stable at the seq_num even if view changes later) 
+  * so, it's safe to commit and execute the request
 
 
 ##### Phase4: Reply
+- Once a node has the Commit Certificate, it execute the request and send REPLY:
+  * result
+  * node_idx
+  * view
 - Clients wait for f+1 matching replies
-- Then, at least one reply is from correct node
+- Then, at least one reply is from correct node, so safe to accept
+
+##### View Change
+- When? primary stops reponsding to backups' pings or backups timeout executing requests, the backups start it
+- Requirement: to guarantee that all committed requests so far are stable across view changes
+- How? Gather information from 2f+1 nodes. If a request is committed, at least one of them has the corresponding Prepare Certificate.
+- Once a backup starts a view change, it sends VIEW-CHANGE to the new primary with followings:
+  * view+1
+  * P: all Prepare Certificates it has
+  * node_idx
+- Once the new primary collects 2f+1 VIEW-CHANGEs, it broadcasts NEW-VIEW with followings:
+  * view+1
+  * V: 2f+1 VIEW-CHANGEs (to prevent a faulty new primary from lying)
+  * O: PRE-PREPARE of each request in the Prepare Certificate in V (to complete committing the corresponding slot by resuming the Pre-prepare phase again, which is the primary's responsibility) -- we do a similar thing is Paxos' view change by having the new leader re-propose chosen values
+
+
+##### Garbage Collection
+- In non-BFT case, servers can periodically perform garbage collection by state-transferring to slow servers
+- In BFT, a server cannot trust state transfer from another node (needs proof)
+- How? Servers periodically decide checkpoint
+- Periodically, each server broadcasts CHECKPOINT with followings:
+  * seq_num of the last exectued request
+  * hash(state)
+- Once a node collects 2f+1 matching CHECKPOINTs, it has Checkpoint Certificate:
+  * the state after executing the corresponding seq_num's request is correct
+  * old requests upto the seq_num can be discarded
+  * if a slow node ask state transfer, it can send the state with the Checkpoint Certificate together  
+
+
+
 
 
 Q. what if a faulty primary broadcast a wrong request (m) to backups?
