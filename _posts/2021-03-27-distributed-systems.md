@@ -342,6 +342,13 @@ history of operations is equivalent to a sequencial order **respecing local orde
 ### Byzantine Fault
 - faulty nodes can take arbitrary actions
 
+### Simple example: can we tolerate 1 BF with 3 (2f+1) nodes?
+- No
+- Assume 3 nodes: A, B, C (C is BF)
+- Initially 'X = 0', a client request 'X = 1'
+- A and C agree on 'X = 1', client get reply
+- client send get(X) to B and C, C lies that 'X = 0', client get 'X = 0' 
+
 ### BFT SMR
 - assume f replicas are Byzantine faulty
 - still want to guarantee linearizability
@@ -382,13 +389,42 @@ history of operations is equivalent to a sequencial order **respecing local orde
 - 2. View change
 - 3. Garbage Collection
 
+##### Phase0: Request
+- client sends request (m) to the primary
+- we assume that clients are non-faulty here
+
 ##### Phase1: Pre-prepare
-- client sends request (m) to the primary 
-- primary broadcast the request to all backups (with view_num (v), slot_num (n))
-  * <<PRE_PREPARE, v, n, D(m)>_sign_, m>
-  * D() is a hash digest operation
-  * sign is an expensive operation, so use D(m) instead of m itself (m could be very large)
-  * backups can easily verify if m and D
+- Why? to broadcast some information (view, seq_num, request) to all replicas
+- The primary broadcasts PRE-PREPARE with followings
+  * view
+  * seq_num
+  * hash(request msg) // sign upto this point
+  * request_msg
+- PRE-PREPARE is signed by the primary
+  * optimization: when signing, use hash of request msg and send original msg separately
+  * then, backups can verify request msg using the hash operation
+  * also, significanty reduce the sigining cost 
+  
+##### Phase2: Prepare
+- Why? a BF primary can do equivocation (sending different requests for a single slot), so backups need to ensure that they've received the same thing
+- Each backup broadcasts PREPARE with followings
+  * view
+  * seq_num
+  * hash(request msg) // sign upto this point
+- If a backup receives 2f matching PREPAREs: 
+  * it's guaranteed that it's the ONLY request that can be prepared for the view and seq_num
+  * why 2f not 2f+1? one from primary received already by PRE-PREPARE
+  * It's called that the (view, seq_num) has the Prepare Certificate (i.e., no other perpare certificate with other requests exist)
+
+
+##### Phase3: Commit
+- Why? Perpare Certificate guarantees that no other requests can be perpared for the same (view, seq_num), howerver it deosn't guarantee for (view', seq_num). To prevent this, we need to ensure that there are enough replicas with the same Prepare Certificate.
+- 
+
+
+##### Phase4: Reply
+- Clients wait for f+1 matching replies
+- Then, at least one reply is from correct node
 
 
 Q. what if a faulty primary broadcast a wrong request (m) to backups?
